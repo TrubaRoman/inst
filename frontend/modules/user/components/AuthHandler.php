@@ -1,8 +1,8 @@
 <?php
-namespace app\components;
+namespace frontend\modules\user\components;
 
-use app\models\Auth;
-use app\models\User;
+use frontend\modules\user\models\Auth;
+use frontend\models\User;
 use Yii;
 use yii\authclient\ClientInterface;
 use yii\helpers\ArrayHelper;
