@@ -199,4 +199,125 @@ class User extends ActiveRecord implements IdentityInterface
     public function getNickname(){
        return ($this->nickname)?$this->nickname:$this->getId();
     }
+
+    /**
+     * Підписатися на Usera
+     * Subscribe current user to given user
+     * @param User $user
+     */
+
+    public function followUser(User $user){
+        /**
+         * @var redis connection
+         */
+        $redis = Yii::$app->redis;
+        $redis->sadd("user:{$this->getId()}:subscriptions",$user->getId());
+        $redis->sadd("user:{$user->getId()}:followers",$this->getId());
+
+    }
+
+    /**
+     * Відписатися від usera
+     * Unsubscribe current user from given user
+     * @param User $user*
+
+     */
+    public function unfollowUser(User $user){
+        /**
+         * @var redis connection
+         */
+        $redis = Yii::$app->redis;
+        $redis->srem("user:{$this->getId()}:subscriptions",$user->getId());
+        $redis->srem("user:{$user->getId()}:followers",$this->getId());
+    }
+
+    /**
+     * Повертає список підсписок
+     * @return mixed
+     */
+    public function getSubscriptions(){
+        /**
+         * @var redis connection
+         */
+        $redis = Yii::$app->redis;
+        $key = "user:{$this->getId()}:subscriptions";
+        $ids = $redis->smembers($key);
+        return User::find()
+            ->select('id,username,nickname')
+            ->where(['id' => $ids])
+            ->orderBy('username')
+            ->asArray()
+            ->all();
+    }
+
+    /**
+     * Повертає список підписників
+     * @return mixed
+     *
+     */
+
+    public function getFollowers(){
+        /**
+         * @var redis connection
+         */
+        $redis = Yii::$app->redis;
+        $key = "user:{$this->getId()}:followers";
+        $ids = $redis->smembers($key);
+        return User::find()
+            ->select('id,username,nickname')
+            ->where(['id' => $ids])
+            ->orderBy('username')
+            ->asArray()
+            ->all();
+
+    }
+
+    /**
+     * @return mixed
+     * get count subscriptions
+     */
+    public function countSubscriptions(){
+        /**
+         * @var redis connection
+         */
+        $redis = Yii::$app->redis;
+        return $redis->scard("user:{$this->getId()}:subscriptions");
+    }
+
+    /**
+     * @return mixed
+     * get count Followers
+     */
+    public function countFollowers(){
+        /**
+         * @var redis connection
+         */
+        $redis = Yii::$app->redis;
+        return $redis->scard("user:{$this->getId()}:followers");
+    }
+
+    /**
+     * get identical value
+     * @param User $user
+     * @return array|ActiveRecord[]
+     */
+    public function getMutualSubscriptionsTo(User $user){
+
+        //current user subcriptions (список моїх підписок )
+        $key1 = "user:{$this->getId()}:subscriptions";
+        //given user follower (список підписників даного друга)
+        $key2 = "user:{$user->getId()}:followers";
+        /*@var redis Connection*/
+        $redis = Yii::$app->redis;
+        //get identical value (знаходимо ідентичні підписки )
+        $ids = $redis->sinter($key1,$key2);
+        return User::find()->select('id,username,nickname')
+            ->where(['id' => $ids])
+            ->orderBy('username')
+            ->asArray()
+            ->all();
+    }
+
+
+
 }
