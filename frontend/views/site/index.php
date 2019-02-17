@@ -20,7 +20,7 @@ $this->title = 'My Yii Application';
 
      <?php foreach ($users as $user):?>
 
-         <p><a href="<?= Url::to(['/user/profile/view','id' => $user->id]);?>"><?=$user->username; ?></p>
+         <p><a href="<?= Url::to(['/user/profile/view','nickname' => $user->getNickname()]);?>"><?=$user->username; ?></p>
         <?php endforeach;?>
         <?php endif;?>
 
