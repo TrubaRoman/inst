@@ -12,7 +12,9 @@ use Faker\Provider\Address;
 use frontend\models\User;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use frontend\modules\user\models\form\PictureForm;
 use Yii;
+use yii\web\UploadedFile;
 
 
 class ProfileController extends Controller
@@ -24,9 +26,38 @@ class ProfileController extends Controller
      */
     public function actionView($nickname){
         $currentUser = Yii::$app->user->identity;
+        $modelPicture = new PictureForm();
         return $this->render('view',[
             'user' => $this->findUser($nickname),
-            'currntUser'=> $currentUser]);
+            'currntUser'=> $currentUser,
+            'modelPicture' => $modelPicture]);
+    }
+
+    /**
+     * handle profile image upload via ajax request
+     */
+
+    public function actionUploadPicture(){
+        $model = new PictureForm();
+
+        $model->picture = UploadedFile::getInstance($model,'picture');
+
+        if($model->validate()){
+            $user = Yii::$app->user->identity;
+            $user->picture = Yii::$app->storage->saveUploadedFile($model->picture);
+            if($user->save(false,['picture'])){
+
+                echo '<pre>';
+                print_r($user->attributes);die;
+                echo '</pre>';
+                die($user->picture);
+            }
+            print_r($model->attributes);die;
+        }
+        echo "<pre>";
+        print_r($model->getErrors());
+        echo "</pre>";die;
+
     }
 
     /**

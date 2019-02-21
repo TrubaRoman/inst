@@ -50,6 +50,10 @@ return [
             ],
         ],
 
+        'storage'=> [
+            'class' => 'frontend\components\Storage'
+        ]
+
     ],
     'params' => $params,
 ];
