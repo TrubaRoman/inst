@@ -46,6 +46,7 @@ FileUpload::widget([
     ],
 ]);
 ?>
+    <a href="<?=Url::to(['/user/profile/delete-picture'])?>" class="btn btn-danger btn-sm">Delete picture</a>
 <?php else:?>
 
 <a href="<?=Url::to(['/user/profile/subcribe','id' => $user->getId()])?>" class="btn btn-info btn-sm">Subscribe</a>

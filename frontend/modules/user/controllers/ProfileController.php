@@ -61,6 +61,22 @@ class ProfileController extends Controller
         return ['success' =>false, 'errors' => $model->getErrors()];
     }
 
+    public function actionDeletePicture(){
+        if (Yii::$app->user->isGuest){
+            return $this->redirect(['/user/default/login']);
+        }
+        $currentUser = Yii::$app->user->identity;
+
+        if($currentUser->deletePicture()){
+            Yii::$app->session->setFlash('success','picture deleted');
+        }
+        else {
+            Yii::$app->session->setFlash('danger','picture no deleted');
+        }
+        return $this->redirect(['/user/profile/view', 'nickname' => $currentUser->getNickname()]);
+
+    }
+
     /**
      * підписка текущого user на вибраного user
      * @param $id
