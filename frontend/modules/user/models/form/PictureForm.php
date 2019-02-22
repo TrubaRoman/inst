@@ -24,8 +24,5 @@ class PictureForm extends Model
         ];
     }
 
-    public function save()
-    {
-        return 1;
-    }
+
 }

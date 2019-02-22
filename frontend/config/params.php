@@ -1,7 +1,7 @@
 <?php
 return [
     'adminEmail' => 'trubaroman571@gmail.com',
-    'maxFileSize' => 1024 * 1024 * 2,
+    'maxFileSize' => 1024 * 1024 * 8,
     'storagePath' => '@frontend/web/uploads/',
     'storageUri' => '/uploads/'
 ];

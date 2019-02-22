@@ -13,39 +13,47 @@ use dosamigos\fileupload\FileUpload;
 
 ?>
 
+
 <h1><?=Html::encode($user->username)?></h1>
 <p><?=HtmlPurifier::process($user->about);?></p>
 <hr>
-<img src="<?php echo $user->getPicture();?>" alt="">
-<?= FileUpload::widget([
+<div  class="row">
+    <div class="col-lg-3">
+    <img src="<?php echo $user->getPicture();?>" alt="" id="profile-picture">
+    </div>
+</div>
+
+<div class="alert alert-success display-none" id="profile-image-success">Profile image updated</div>
+<div class="alert alert-danger display-none" id="profile-image-fail"></div>
+<?php if($currentUser->equals($user)):?>
+<?=
+FileUpload::widget([
     'model' => $modelPicture,
     'attribute' => 'picture',
     'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
     'options' => ['accept' => 'image/*'],
-    'clientOptions' => [
-        'maxFileSize' => 2000000
-    ],
-    // Also, you can specify jQuery-File-Upload events
-    // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
     'clientEvents' => [
         'fileuploaddone' => 'function(e, data) {
-                                console.log(e);
-                                console.log(data);
-                            }',
-        'fileuploadfail' => 'function(e, data) {
-                                console.log(e);
-                                console.log(data);
-                            }',
+                                            if (data.result.success) {
+                                                $("#profile-image-success").show();
+                                                $("#profile-image-fail").hide();
+                                                $("#profile-picture").attr("src", data.result.pictureUri);
+                                            } else {
+                                                $("#profile-image-fail").html(data.result.errors.picture).show();
+                                                $("#profile-image-success").hide();
+                                            }
+                                        }',
     ],
-]); ?>
+]);
+?>
+<?php else:?>
 
-<?php if ($currntUser['id'] !== $user->getId()):?>
 <a href="<?=Url::to(['/user/profile/subcribe','id' => $user->getId()])?>" class="btn btn-info btn-sm">Subscribe</a>
 <a href="<?=Url::to(['/user/profile/unsubcribe','id' => $user->getId()])?>" class="btn btn-info btn-sm">Unsubscribe</a>
 <hr>
 <h4>Frends, who are also following: <?=Html::encode($user->username);?></h4>
 <div class="row">
-    <?php foreach ($currntUser->getMutualSubscriptionsTo($user) as $item ):?>
+    <?php foreach ($currentUser->getMutualSubscriptionsTo($user) as $item ):?>
     <div class="col-md-12">
         <a href="<?=Url::to(['/user/profile/view','nickname' =>($item['nickname'])?$item['nickname']:$item['id']])?>">
         <h4> <?=Html::encode($item['username'])?></h4></a>
