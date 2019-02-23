@@ -65,6 +65,7 @@ class ProfileController extends Controller
         if (Yii::$app->user->isGuest){
             return $this->redirect(['/user/default/login']);
         }
+        
         $currentUser = Yii::$app->user->identity;
 
         if($currentUser->deletePicture()){

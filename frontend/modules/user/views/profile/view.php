@@ -6,6 +6,7 @@
  * @var $modelPicture \frontend\modules\user\models\form\PictureForm
  *
  */
+
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
@@ -14,26 +15,27 @@ use dosamigos\fileupload\FileUpload;
 ?>
 
 
-<h1><?=Html::encode($user->username)?></h1>
-<p><?=HtmlPurifier::process($user->about);?></p>
+<h1><?= Html::encode($user->username) ?></h1>
+<p><?= HtmlPurifier::process($user->about); ?></p>
 <hr>
-<div  class="row">
+<div class="row">
     <div class="col-lg-3">
-    <img src="<?php echo $user->getPicture();?>" alt="" id="profile-picture">
+        <img src="<?php echo $user->getPicture(); ?>" alt="" id="profile-picture">
     </div>
 </div>
 
+
 <div class="alert alert-success display-none" id="profile-image-success">Profile image updated</div>
 <div class="alert alert-danger display-none" id="profile-image-fail"></div>
-<?php if($currentUser->equals($user)):?>
-<?=
-FileUpload::widget([
-    'model' => $modelPicture,
-    'attribute' => 'picture',
-    'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
-    'options' => ['accept' => 'image/*'],
-    'clientEvents' => [
-        'fileuploaddone' => 'function(e, data) {
+<?php if ($currentUser && $currentUser->equals($user)): ?>
+    <?=
+    FileUpload::widget([
+        'model' => $modelPicture,
+        'attribute' => 'picture',
+        'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
+        'options' => ['accept' => 'image/*'],
+        'clientEvents' => [
+            'fileuploaddone' => 'function(e, data) {
                                             if (data.result.success) {
                                                 $("#profile-image-success").show();
                                                 $("#profile-image-fail").hide();
@@ -43,28 +45,32 @@ FileUpload::widget([
                                                 $("#profile-image-success").hide();
                                             }
                                         }',
-    ],
-]);
-?>
-    <a href="<?=Url::to(['/user/profile/delete-picture'])?>" class="btn btn-danger btn-sm">Delete picture</a>
-<?php else:?>
+        ],
+    ]);
+    ?>
+    <a href="<?= Url::to(['/user/profile/delete-picture']) ?>" class="btn btn-danger btn-sm">Delete picture</a>
+<?php else: ?>
 
-<a href="<?=Url::to(['/user/profile/subcribe','id' => $user->getId()])?>" class="btn btn-info btn-sm">Subscribe</a>
-<a href="<?=Url::to(['/user/profile/unsubcribe','id' => $user->getId()])?>" class="btn btn-info btn-sm">Unsubscribe</a>
-<hr>
-<h4>Frends, who are also following: <?=Html::encode($user->username);?></h4>
-<div class="row">
-    <?php foreach ($currentUser->getMutualSubscriptionsTo($user) as $item ):?>
-    <div class="col-md-12">
-        <a href="<?=Url::to(['/user/profile/view','nickname' =>($item['nickname'])?$item['nickname']:$item['id']])?>">
-        <h4> <?=Html::encode($item['username'])?></h4></a>
-    </div>
-    <?php endforeach;?>
+    <a href="<?= Url::to(['/user/profile/subcribe', 'id' => $user->getId()]) ?>"
+       class="btn btn-info btn-sm">Subscribe</a>
+    <a href="<?= Url::to(['/user/profile/unsubcribe', 'id' => $user->getId()]) ?>" class="btn btn-info btn-sm">Unsubscribe</a>
+    <hr>
+    <?php if ($currentUser): ?>
+        <h4>Frends, wh o are also following: <?= Html::encode($user->username); ?></h4>
+        <div class="row">
+            <?php foreach ($currentUser->getMutualSubscriptionsTo($user) as $item): ?>
+                <div class="col-md-12">
+                    <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname']) ? $item['nickname'] : $item['id']]) ?>">
+                        <h4> <?= Html::encode($item['username']) ?></h4></a>
+                </div>
+            <?php endforeach; ?>
 
-</div><?php  endif;?>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">
-   View subscriptions  <?=$user->countSubscriptions();?>
+    View subscriptions <?= $user->countSubscriptions(); ?>
 </button>
 
 <!-- Modal -->
@@ -72,18 +78,19 @@ FileUpload::widget([
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="myModalLabel">Subscriptions</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <?php foreach ($user->getSubscriptions() as $Subscription):?>
-                    <div class="col-md-12">
-                        <a href="<?php echo Url::to(['/user/profile/view','nickname' => ($Subscription['nickname'])?$Subscription['nickname']:$Subscription['id']])?>">
-                            <span><?= Html::encode($Subscription['username'])?></span>
-                        </a>
-                    </div>
-                    <?php endforeach;?>
+                    <?php foreach ($user->getSubscriptions() as $Subscription): ?>
+                        <div class="col-md-12">
+                            <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => ($Subscription['nickname']) ? $Subscription['nickname'] : $Subscription['id']]) ?>">
+                                <span><?= Html::encode($Subscription['username']) ?></span>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <div class="modal-footer">
@@ -95,7 +102,7 @@ FileUpload::widget([
 </div>
 
 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal2">
-    View followers <?=$user->countFollowers();?>
+    View followers <?= $user->countFollowers(); ?>
 </button>
 
 <!-- Modal -->
@@ -103,18 +110,19 @@ FileUpload::widget([
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="myModalLabel">Followers</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <?php foreach ($user->getFollowers() as $Follower):?>
+                    <?php foreach ($user->getFollowers() as $Follower): ?>
                         <div class="col-md-12">
-                            <a href="<?php echo Url::to(['/user/profile/view','nickname' => ($Follower['nickname'])?$Follower['nickname']:$Follower['id']])?>">
-                                <span><?= Html::encode($Follower['username'])?></span>
+                            <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => ($Follower['nickname']) ? $Follower['nickname'] : $Follower['id']]) ?>">
+                                <span><?= Html::encode($Follower['username']) ?></span>
                             </a>
                         </div>
-                    <?php endforeach;?>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <div class="modal-footer">
