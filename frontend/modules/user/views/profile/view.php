@@ -55,7 +55,7 @@ use dosamigos\fileupload\FileUpload;
        class="btn btn-info btn-sm">Subscribe</a>
     <a href="<?= Url::to(['/user/profile/unsubcribe', 'id' => $user->getId()]) ?>" class="btn btn-info btn-sm">Unsubscribe</a>
     <hr>
-    <?php if ($currentUser): ?>
+    <?php if ($currentUser && $currentUser->getMutualSubscriptionsTo($user)): ?>
         <h4>Frends, wh o are also following: <?= Html::encode($user->username); ?></h4>
         <div class="row">
             <?php foreach ($currentUser->getMutualSubscriptionsTo($user) as $item): ?>

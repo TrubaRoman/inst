@@ -7,5 +7,12 @@ return [
     'profilePicture' => [
         'maxWidth' => 600,
         'maxHeight' => 400
-    ]
+    ],
+
+    'postPicture' => [
+        'maxWidth' => 600,
+        'maxHeight'=> 400
+    ],
+
+    'feedPostLimit' => 100,
 ];
